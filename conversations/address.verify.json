@@ -1,0 +1,46 @@
+[
+  {
+    "content": "How can I help you?",
+    "role": "assistant"
+  },
+  {
+    "content": "I have an address verification function I'd like to orchestrate. The inputs and outputs share this model:\n{\"name\": \"John Doe\", \"address_line1\": \"123 Main St\", \"address_line2\": \"Apt 4B\", \"city\": \"Springfield\", \"state\": \"IL\", \"zip\": \"62701\", \"country\": \"US\" }",
+    "role": "user"
+  },
+  {
+    "content": "Got it! So you have an address verification function that takes an input JSON object with the following properties: name, address_line1, address_line2, city, state, zip, and country. And the output JSON object will have the same properties. Is that correct?",
+    "role": "assistant"
+  },
+  {
+    "content": "Yes. Can you help me create a workflow with inputs and outputs that reflect this as well? I need the inputs to the flow to be mapped and provided to the worker function. And I need the response from the worker function to map to the job output. What additional information do you need from me?",
+    "role": "user"
+  },
+  {
+    "content": "Thank you for confirming. To create the workflow, I need to know the topic (subtype) for your address verification worker function. Could you please provide me with the topic?",
+    "role": "assistant"
+  },
+  {
+    "content": "the topic should be address.verify.",
+    "role": "user"
+  },
+  {
+    "content": "Thank you for providing the topic. Now, do you want the flow to subscribe to any specific topic? If so, please let me know the topic.",
+    "role": "assistant"
+  },
+  {
+    "content": "Let's use the same topic: address.verify.",
+    "role": "user"
+  },
+  {
+    "content": "Great! Now, let's create the YAML definition for your workflow. Since you mentioned that you want to map the inputs and outputs, I will include the schema and map definitions in the YAML as well.\n\nHere is the YAML definition for your workflow:\n\napp:\nid: sandbox\nversion: '1'\ngraphs:\n- subscribes: address.verify\ninput:\nschema:\ntype: object\nproperties:\nname:\ntype: string\naddress_line1:\ntype: string\naddress_line2:\ntype: string\ncity:\ntype: string\nstate:\ntype: string\nzip:\ntype: string\ncountry:\ntype: string\noutput:\nschema:\ntype: object\nproperties:\nname:\ntype: string\naddress_line1:\ntype: string\naddress_line2:\ntype: string\ncity:\ntype: string\nstate:\ntype: string\nzip:\ntype: string\ncountry:\ntype: string\n\nactivities:\nt1:\ntype: trigger\na1:\ntype: worker\nsubtype: address.verify\ninput:\nschema:\ntype: object\nproperties:\nname:\ntype: string\naddress_line1:\ntype: string\naddress_line2:\ntype: string\ncity:\ntype: string\nstate:\ntype: string\nzip:\ntype: string\ncountry:\ntype: string\nmaps:\nname: '{t1.output.data.name}'\naddress_line1: '{t1.output.data.address_line1}'\naddress_line2: '{t1.output.data.address_line2}'\ncity: '{t1.output.data.city}'\nstate: '{t1.output.data.state}'\nzip: '{t1.output.data.zip}'\ncountry: '{t1.output.data.country}'\noutput:\nschema:\ntype: object\nproperties:\nname:\ntype: string\naddress_line1:\ntype: string\naddress_line2:\ntype: string\ncity:\ntype: string\nstate:\ntype: string\nzip:\ntype: string\ncountry:\ntype: string\nmaps:\nname: '{a1.output.data.name}'\naddress_line1: '{a1.output.data.address_line1}'\naddress_line2: '{a1.output.data.address_line2}'\ncity: '{a1.output.data.city}'\nstate: '{a1.output.data.state}'\nzip: '{a1.output.data.zip}'\ncountry: '{a1.output.data.country}'\njob:\nmaps:\nname: '{$self.output.data.name}'\naddress_line1: '{$self.output.data.address_line1}'\naddress_line2: '{$self.output.data.address_line2}'\ncity: '{$self.output.data.city}'\nstate: '{$self.output.data.state}'\nzip: '{$self.output.data.zip}'\ncountry: '{$self.output.data.country}'\ntransitions:\nt1:\n- to: a1\n\nThis YAML definition sets up a workflow with a trigger activity (t1) and a worker activity (a1). The trigger activity receives the input data, and the worker activity performs the address verification. The input and output schemas are defined to match the JSON model you provided. The maps section is used to map the input and output data between activities.\n\nTo deploy and execute this workflow, you can use the connection script provided earlier. Just make sure to replace <path to YAML spec> with the path to the YAML file containing the above definition.\n\nLet me know if you need any further assistance!",
+    "role": "assistant"
+  },
+  {
+    "content": "Can you provide configuration, deployment and sample usage (typescript).",
+    "role": "user"
+  },
+  {
+    "content": "Certainly! Here is the complete TypeScript code for configuring, deploying, and using the workflow:\n\nimport Redis from 'ioredis';\nimport {\nPubSubDB,\nIORedisStore,\nIORedisStream,\nIORedisSub } from '@pubsubdb/pubsubdb';\n\nconst config = { host, port, password, db };\nconst redis1 = new Redis(config);\nconst redis2 = new Redis(config);\nconst redis3 = new Redis(config);\nconst redis4 = new Redis(config);\nconst redis5 = new Redis(config);\nconst redis6 = new Redis(config);\n\nconst pubSubDB = await PubSubDB.init({\nappId: 'sandbox',\n\nengine: {\nstore: new IORedisStore(redis1),\nstream: new IORedisStream(redis2),\nsub: new IORedisSub(redis3),\n},\n\nworkers: [\n{\ntopic: 'address.verify',\nstore: new IORedisStore(redis4),\nstream: new IORedisStream(redis5),\nsub: new IORedisSub(redis6),\ncallback: async (data: StreamData) => {\n// Perform address verification logic here\n// Access input data using data.input\n// Access output data using data.output\n\n// Mocked verification result\nreturn data.input;\n}\n}\n]\n});\n\n// Deployment\nconst yamlSpec = <path to YAML spec>;\nawait pubSubDB.app.loadAppFromYAML(yamlSpec);\n\n// Sample Usage\nconst inputData = {\nname: 'John Doe',\naddress_line1: '123 Main St',\naddress_line2: 'Apt 4B',\ncity: 'Springfield',\nstate: 'IL',\nzip: '62701',\ncountry: 'US'\n};\n\n// Publish the inputData to the workflow\nconst jobId = await pubSubDB.app.publish('address.verify', inputData);\n\n// Wait for a result\nconst result = await pubSubDB.job.subscribe(jobId);\nconsole.log(result);\n\nThis script configures the pubSubDB connection, deploys the YAML workflow, and provides a sample usage that you can execute. Make sure to replace <path to YAML spec> with the path to your YAML definition file.\n\nTo run the script, you'll need to install and setup Redis as well as the pubSubDB and ioredis NPM packages. This is a simple representation and may require adjustments depending on your setup.\n\nNote: The address verification logic inside the callback function is mocked to simply return the input as output. Replace this with your actual verification logic.\n\nLet me know if you have further questions or need additional assistance!",
+    "role": "assistant"
+  }
+]
