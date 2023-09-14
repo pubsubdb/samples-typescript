@@ -3,23 +3,23 @@ import fastify from 'fastify';
 
 import { setupTelemetry } from '../services/tracer'
 import { registerTestRoutes } from './routes/test';
-import { registerWebappRoutes } from './routes/webapp';
 import initDurableWorker from '../services/durable/worker';
 
 const start = async (port: number) => {
-  //0) setup open telemetry export to honeycomb
+  // setup open telemetry (sink/export to honeycomb)
   setupTelemetry();
 
-  //1) init Fastify server and plugins
+  // init Fastify http server
   const server = fastify({ logger: true });
   
-  //5) register fastify `demo` route (/apis/v1/test/:workflowName)
+  // register test route (/apis/v1/test/:workflowName)
   registerTestRoutes(server);
 
   //7) start the workers
   await initDurableWorker('helloworld');
   await initDurableWorker('child');
   await initDurableWorker('parent');
+  await initDurableWorker('looper');
 
   //8) start fastify on the port configured in the docker-compose.yml file
   try {
