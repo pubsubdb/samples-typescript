@@ -1,7 +1,7 @@
 # samples-typescript
-This repo contains a few sample workflows and activities to demonstrate the use of PubSubDB in a TypeScript environment. The samples are built using PubSubDB's Durable module which is an emulation of Temporal's TypeScript SDK. Both proxyActivities and executeChild are reflected in the demonstration.
+This repo contains sample workflows and activities to demonstrate the use of PubSubDB in a TypeScript environment. The samples are built using PubSubDB's `Durable` module which is an emulation of Temporal's TypeScript SDK. Both `proxyActivities` and `executeChild` are reflected in the demonstration.
 
-Here, for example, is the `looper` workflow. This is the most complex of the examples. It calls two activities sequentially and three child workflows in parallel. The workflow is defined in `./services/durable/looper/workflows.ts`:
+Here, for example, is the `looper` workflow. It calls two activities *sequentially* and three child workflows in *parallel*. The workflow is defined in `./services/durable/looper/workflows.ts`:
 
 ```typescript
 import { Durable } from '@pubsubdb/pubsubdb';
@@ -81,7 +81,7 @@ Open a browser and navigate to `http://localhost:3002/apis/v1/test/helloworld` t
 
 
 ### Visualize | OpenTelemetry
-You will see the full OpenTelemetry execution tree organized as a DAG (if you provided credentials for HoneyComb/etc), allowing you to configure dashboards and alerts as the processes execute. The following graph represents the execution of the `looper` workflow. That worflow includes two sequential activity calls (`proxyActivity`) and three nested parallel workflow calls (`executeChild`). The times shown are the total execution time for each node in the graph. Every node in the graph is a separate span in the OpenTelemetry trace and can be expanded for more detail about the subprocess.
+You will see the full OpenTelemetry execution tree organized as a DAG (if you provided credentials for HoneyComb/etc), allowing you to configure dashboards and alerts as the processes execute. The following graph represents the execution of the `looper` workflow. That worflow includes two *sequential* activity calls (`proxyActivity`) and three nested *parallel* workflow calls (`executeChild`). The times shown are the total execution time for each node in the graph. Every node in the graph is a separate span in the OpenTelemetry trace and can be expanded for more detail about the subprocess.
 
 <img src="./img/opentelemetry.png" alt="Open Telemetry" style="width:600px;max-width:600px;">
 
